@@ -5,11 +5,15 @@ name = "moltbot"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
+[observability]
+enabled = true
+
 # Container configuration
 [[containers]]
 class_name = "MoltbotContainer"
 image = "./Dockerfile"
 max_instances = 5
+instance_type = "standard-1"  # More memory than default "lite" (256MB)
 
 # Durable Object binding for the container
 [[durable_objects.bindings]]

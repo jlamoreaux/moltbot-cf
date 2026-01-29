@@ -8,6 +8,13 @@ Deploy [moltbot](https://github.com/moltbot/moltbot) to Cloudflare Containers.
 - Cloudflare account with Containers enabled (beta)
 - Node.js 18+
 
+## Local Testing
+
+```bash
+docker build -t moltbot-cf .
+docker run -p 8080:8080 -e CLAWDBOT_GATEWAY_TOKEN=mytoken moltbot-cf
+```
+
 ## Setup
 
 ```bash
@@ -17,12 +24,15 @@ npx wrangler login
 
 ## Configure Secrets
 
-Add your API keys as Cloudflare secrets:
+**Required:**
+```bash
+npx wrangler secret put CLAWDBOT_GATEWAY_TOKEN
+```
 
+**Optional (for AI/channel features):**
 ```bash
 npx wrangler secret put ANTHROPIC_API_KEY
 npx wrangler secret put OPENAI_API_KEY
-# Optional channel tokens:
 npx wrangler secret put DISCORD_TOKEN
 npx wrangler secret put TELEGRAM_TOKEN
 ```
@@ -49,14 +59,18 @@ npm run logs     # Tail logs
 Edit `wrangler.toml` to adjust:
 
 - `max_instances` - Maximum concurrent container instances (default: 5)
-- `sleepAfter` in `src/index.ts` - Container idle timeout (default: 5m)
+- `instance_type` - Container size (default: standard-1, 4GB RAM)
 
-## Pin moltbot Version
+Edit `src/index.ts` to adjust:
+
+- `sleepAfter` - Container idle timeout (default: 10m)
+
+## Pin clawdbot Version
 
 Edit `Dockerfile` to pin a specific version:
 
 ```dockerfile
-RUN npm install -g moltbot@2026.1.27
+RUN npm install -g clawdbot@2026.1.24
 ```
 
 ## Notes

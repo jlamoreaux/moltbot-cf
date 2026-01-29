@@ -1,8 +1,11 @@
-import { Container } from 'cloudflare:workers';
+import { Container } from '@cloudflare/containers';
 
 interface Env {
-	MOLTBOT_CONTAINER: DurableObjectNamespace<MoltbotContainer>;
-	// Add secrets via: wrangler secret put <KEY>
+	MOLTBOT_CONTAINER: DurableObjectNamespace<MoltbotContainer> & {
+		getByName(name: string): MoltbotContainer;
+	};
+	// Secrets (add via: npx wrangler secret put <KEY>)
+	CLAWDBOT_GATEWAY_TOKEN?: string;
 	ANTHROPIC_API_KEY?: string;
 	OPENAI_API_KEY?: string;
 	DISCORD_TOKEN?: string;
@@ -11,18 +14,15 @@ interface Env {
 
 // Moltbot container configuration
 export class MoltbotContainer extends Container {
-	// Gateway listens on port 8080
 	defaultPort = 8080;
+	sleepAfter = '10m';
 
-	// Keep container alive for 5 minutes after last request
-	sleepAfter = '5m';
-
-	// Pass environment variables to the container
+	// Pass secrets to the container as environment variables
 	override get envVars(): Record<string, string> {
 		const env = this.env as Env;
 		const vars: Record<string, string> = {};
 
-		// Pass through API keys if configured
+		if (env.CLAWDBOT_GATEWAY_TOKEN) vars.CLAWDBOT_GATEWAY_TOKEN = env.CLAWDBOT_GATEWAY_TOKEN;
 		if (env.ANTHROPIC_API_KEY) vars.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
 		if (env.OPENAI_API_KEY) vars.OPENAI_API_KEY = env.OPENAI_API_KEY;
 		if (env.DISCORD_TOKEN) vars.DISCORD_TOKEN = env.DISCORD_TOKEN;
@@ -30,23 +30,27 @@ export class MoltbotContainer extends Container {
 
 		return vars;
 	}
+
+	override onStart() {
+		console.log('Moltbot container started');
+	}
+
+	override onError(error: unknown) {
+		console.log('Container error:', error);
+	}
 }
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
 
-		// Health check endpoint
 		if (url.pathname === '/health') {
 			return new Response('OK', { status: 200 });
 		}
 
-		// Route all requests to a single named container instance
-		// Using a fixed name means all requests go to the same stateful instance
-		const id = env.MOLTBOT_CONTAINER.idFromName('moltbot-main');
-		const container = env.MOLTBOT_CONTAINER.get(id);
+		// Use getByName for stateful routing to a single instance
+		const container = env.MOLTBOT_CONTAINER.getByName('moltbot-main');
 
-		// Forward the request to the container
 		return container.fetch(request);
 	},
 };

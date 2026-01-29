@@ -1,7 +1,10 @@
 FROM node:22-bookworm-slim
 
-# Install moltbot from npm
-RUN npm install -g moltbot@latest
+# Install git (required for some npm dependencies)
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+# Install clawdbot (moltbot's npm package name)
+RUN npm install -g clawdbot@latest
 
 # Cloudflare Containers require port 8080
 EXPOSE 8080
@@ -9,5 +12,13 @@ EXPOSE 8080
 # Security hardening: run as non-root
 USER node
 
-# Run gateway bound to all interfaces on port 8080
-CMD ["moltbot", "gateway", "run", "--bind", "0.0.0.0", "--port", "8080", "--force"]
+# Configure gateway for headless operation
+RUN clawdbot config set gateway.mode local && \
+    clawdbot config set gateway.port 8080 && \
+    clawdbot config set gateway.bind lan
+
+# Default token (override with CLAWDBOT_GATEWAY_TOKEN env var at runtime)
+ENV CLAWDBOT_GATEWAY_TOKEN=changeme
+
+# Run gateway
+CMD ["clawdbot", "gateway", "run", "--force"]
