@@ -8,6 +8,7 @@ interface Env {
 	CLAWDBOT_GATEWAY_TOKEN?: string;
 	ANTHROPIC_API_KEY?: string;
 	OPENAI_API_KEY?: string;
+	BRAVE_API_KEY?: string;
 	DISCORD_TOKEN?: string;
 	TELEGRAM_TOKEN?: string;
 }
@@ -25,6 +26,7 @@ export class MoltbotContainer extends Container {
 		if (env.CLAWDBOT_GATEWAY_TOKEN) vars.CLAWDBOT_GATEWAY_TOKEN = env.CLAWDBOT_GATEWAY_TOKEN;
 		if (env.ANTHROPIC_API_KEY) vars.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
 		if (env.OPENAI_API_KEY) vars.OPENAI_API_KEY = env.OPENAI_API_KEY;
+		if (env.BRAVE_API_KEY) vars.BRAVE_API_KEY = env.BRAVE_API_KEY;
 		if (env.DISCORD_TOKEN) vars.DISCORD_TOKEN = env.DISCORD_TOKEN;
 		if (env.TELEGRAM_TOKEN) vars.TELEGRAM_TOKEN = env.TELEGRAM_TOKEN;
 
