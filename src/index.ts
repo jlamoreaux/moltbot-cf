@@ -1,4 +1,5 @@
 import { Container } from '@cloudflare/containers';
+import { env } from 'cloudflare:workers';
 
 interface Env {
 	MOLTBOT_CONTAINER: DurableObjectNamespace<MoltbotContainer> & {
@@ -19,19 +20,14 @@ export class MoltbotContainer extends Container {
 	sleepAfter = '10m';
 
 	// Pass secrets to the container as environment variables
-	override get envVars(): Record<string, string> {
-		const env = this.env as Env;
-		const vars: Record<string, string> = {};
-
-		if (env.CLAWDBOT_GATEWAY_TOKEN) vars.CLAWDBOT_GATEWAY_TOKEN = env.CLAWDBOT_GATEWAY_TOKEN;
-		if (env.ANTHROPIC_API_KEY) vars.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
-		if (env.OPENAI_API_KEY) vars.OPENAI_API_KEY = env.OPENAI_API_KEY;
-		if (env.BRAVE_API_KEY) vars.BRAVE_API_KEY = env.BRAVE_API_KEY;
-		if (env.DISCORD_TOKEN) vars.DISCORD_TOKEN = env.DISCORD_TOKEN;
-		if (env.TELEGRAM_TOKEN) vars.TELEGRAM_TOKEN = env.TELEGRAM_TOKEN;
-
-		return vars;
-	}
+	envVars = {
+		...(env.CLAWDBOT_GATEWAY_TOKEN && { CLAWDBOT_GATEWAY_TOKEN: env.CLAWDBOT_GATEWAY_TOKEN }),
+		...(env.ANTHROPIC_API_KEY && { ANTHROPIC_API_KEY: env.ANTHROPIC_API_KEY }),
+		...(env.OPENAI_API_KEY && { OPENAI_API_KEY: env.OPENAI_API_KEY }),
+		...(env.BRAVE_API_KEY && { BRAVE_API_KEY: env.BRAVE_API_KEY }),
+		...(env.DISCORD_TOKEN && { DISCORD_TOKEN: env.DISCORD_TOKEN }),
+		...(env.TELEGRAM_TOKEN && { TELEGRAM_TOKEN: env.TELEGRAM_TOKEN }),
+	};
 
 	override onStart() {
 		console.log('Moltbot container started');
