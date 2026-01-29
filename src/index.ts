@@ -1,5 +1,5 @@
 import { Container } from '@cloudflare/containers';
-import { env } from 'cloudflare:workers';
+import { env as cloudflareEnv } from 'cloudflare:workers';
 
 interface Env {
 	MOLTBOT_CONTAINER: DurableObjectNamespace<MoltbotContainer> & {
@@ -13,6 +13,9 @@ interface Env {
 	DISCORD_TOKEN?: string;
 	TELEGRAM_TOKEN?: string;
 }
+
+// Cast the cloudflare env to our Env type
+const env = cloudflareEnv as unknown as Env;
 
 // Moltbot container configuration
 export class MoltbotContainer extends Container {
