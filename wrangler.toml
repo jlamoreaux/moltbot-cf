@@ -1,0 +1,26 @@
+# Moltbot Cloudflare Container Configuration
+# See: https://developers.cloudflare.com/containers/get-started/
+
+name = "moltbot"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Container configuration
+[[containers]]
+class_name = "MoltbotContainer"
+image = "./Dockerfile"
+max_instances = 5
+
+# Durable Object binding for the container
+[[durable_objects.bindings]]
+name = "MOLTBOT_CONTAINER"
+class_name = "MoltbotContainer"
+
+# Required migration for Durable Objects with SQLite
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MoltbotContainer"]
+
+# Environment variables (secrets should be added via wrangler secret)
+# [vars]
+# ANTHROPIC_API_KEY = "" # Use: wrangler secret put ANTHROPIC_API_KEY

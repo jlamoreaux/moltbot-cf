@@ -1,0 +1,16 @@
+{
+	"name": "moltbot-cloudflare",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"status": "wrangler containers list",
+		"images": "wrangler containers images list",
+		"logs": "wrangler tail"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20241127.0",
+		"wrangler": "^3.99.0"
+	}
+}
