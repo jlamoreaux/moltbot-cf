@@ -6,7 +6,7 @@ Deploy [moltbot](https://github.com/moltbot/moltbot) to [Cloudflare Containers](
 
 - Docker running locally (`docker info` should succeed)
 - Cloudflare account with Containers enabled (beta)
-- Node.js 18+
+- Node.js 22+ (required by Wrangler 4)
 
 ## Quick Start
 
